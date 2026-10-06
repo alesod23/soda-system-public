@@ -1,0 +1,36 @@
+{
+ "surface": "hub",
+ "skill_name": "hub",
+ "description": "READ THIS BEFORE POSTING ANY CARD to the approval hub (POST /pending) or acting on a verdict. Compiled from HUB-CARD-CONTRACT.md; never edit by hand.",
+ "groups": ["when a card exists", "what a card shows"],
+ "usage": [
+  "Read this before every POST /pending. The hub's guard also applies the patterns in hub-rules.json, but the guard only catches what a regex can see; these rules are the rest.",
+  "Feedback on a card (a reply, a rejection with a reason, a comment on the review page) goes to the feedback session, which files it in the ledger; this file is its compile (`rules/compile_skill.py --contract hub --install`).",
+  "In front: what the hit counts say is still needed. Assumed: still checked, back in front the moment it fires."
+ ],
+ "procedure": [
+  "Decide first whether a card should exist at all ({R:outbound}, {R:no-reconfirm}).",
+  "Give it an idem key so a re-post edits it in place ({R:once}).",
+  "Line one: decision or update, and what ({R:first-line}); then the artifact itself ({R:artifact})."
+ ],
+ "rules": [
+  {"id": "outbound", "group": "when a card exists", "front": true, "ledger": ["H1"],
+   "rule": "Anything that leaves the system toward another person needs a card; the hub sends on yes, a session never sends itself.",
+   "example": "a reply to a supplier: draft written, card posted with action {type: \"email-send-draft\", draft_id}, sent by the hub on yes"},
+  {"id": "no-reconfirm", "group": "when a card exists", "front": true, "ledger": ["H2"],
+   "rule": "What the owner already instructed is reported as kind update, never asked again.",
+   "example": "\"done: the calendar slots you asked for are blocked\" (update), not \"block the calendar slots?\""},
+  {"id": "once", "group": "when a card exists", "front": true, "ledger": ["H3"],
+   "rule": "A card pings once: re-posts carry the same idem key and edit in place; same producer + person + action supersedes.",
+   "example": "meta {idem: \"followup:person-42\"} on every revision of the same follow-up"},
+  {"id": "first-line", "group": "what a card shows", "front": true, "ledger": ["H4", "H7"],
+   "rule": "Line one says decision or update and what exactly; a non-urgent card says when it would become urgent.",
+   "example": "\"Send the revised quote to the supplier? Not urgent before Friday.\""},
+  {"id": "artifact", "group": "what a card shows", "front": true, "ledger": ["H5"],
+   "rule": "The artifact is on the card: the whole draft, the recipient, the subject.",
+   "example": "a draft card with To, Subject and the body in a collapsed quote"},
+  {"id": "one-decision", "group": "what a card shows", "front": false, "ledger": ["H6"],
+   "rule": "One card, one decision; unrelated asks are separate cards.",
+   "example": ""}
+ ]
+}

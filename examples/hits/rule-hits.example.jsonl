@@ -1,0 +1,6 @@
+{"ts":"2026-01-20T09:00:00Z","surface":"hub","rule":"H6","action":"flag","item":"a100","model":"opus","skill_v":"2026-01-19a","path":"session","by":"example-observer","note":"two unrelated asks on one card"}
+{"ts":"2026-01-21T10:00:00Z","surface":"hub","rule":"H6","action":"flag","item":"a101","model":"opus","skill_v":"2026-01-19a","path":"session","by":"example-observer","note":"bundled a calendar ask with a draft"}
+{"ts":"2026-01-21T10:00:00Z","surface":"hub","rule":"H4","action":"ok","item":"a101","model":"opus","skill_v":"2026-01-19a","path":"session","by":"example-observer","note":"line one says what is approved"}
+{"ts":"2026-01-22T08:00:00Z","surface":"hub","rule":"H2","action":"downgrade","item":"a102","model":null,"skill_v":null,"path":"session","by":"hub-guard","note":"confirm-what-was-instructed pattern"}
+{"ts":"2026-01-22T08:05:00Z","surface":"notif","rule":"H1","action":"ok","item":"n20260122T080500","model":"opus","skill_v":"2026-01-19a","path":"notif chat","by":"notif-observer.js","note":"2 line(s), each names the sender"}
+{"ts":"2026-01-22T08:05:00Z","surface":"notif","rule":"H7","action":"flag","item":"n20260122T080500","model":"opus","skill_v":"2026-01-19a","path":"notif email","by":"example-observer","note":"an introduction was classified as not actionable"}

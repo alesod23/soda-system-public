@@ -1,0 +1,11 @@
+{
+  "name": "soda-notif",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The SODA system's notification layer: debounce, answered/stale filters, a classifier that reads the compiled notif skill on every batch, observer hit lines, auto-collapse.",
+  "license": "Apache-2.0",
+  "scripts": {
+    "start": "node daemon.js",
+    "test": "node test/debounce.test.js && node test/observer.test.js"
+  }
+}

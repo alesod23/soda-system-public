@@ -1,0 +1,36 @@
+{
+ "surface": "notif",
+ "skill_name": "notif",
+ "description": "READ THIS BEFORE DECIDING WHAT REACHES THE OWNER'S PHONE UNASKED (a notification card, a recap, a done-notification). Loaded by the notification classifier (notif/daemon.js) on every batch. Compiled from NOTIF-CONTRACT.md; never edit by hand.",
+ "groups": ["what a card shows", "what counts as news", "what never becomes a card"],
+ "usage": [
+  "The reader is the notification classifier: notif/daemon.js appends this file to its system prompt on every call (env NOTIF_SKILL, default $SODA_SKILLS_DIR/notif/SKILL.md).",
+  "A sentence of feedback on a notification (a Telegram reply starting with `notif:`) is queued for the feedback session and filed in NOTIF-CONTRACT.md; this file is its compile.",
+  "In front: what the hit counts say is still needed. Assumed: still checked, back in front the moment it fires."
+ ],
+ "procedure": [
+  "Drop what the owner already answered ({R:answered}) and what is stale ({R:stale}) before anything else.",
+  "Drop pure closure ({R:closure}).",
+  "Every kept line names who wrote it ({R:who})."
+ ],
+ "rules": [
+  {"id": "who", "group": "what a card shows", "front": true, "ledger": ["H1"],
+   "rule": "Every line of a card names who wrote it (and the group, for a group chat) before the snippet.",
+   "example": "\"Sam / Project chat: can we move the review to Monday?\", never a bare snippet"},
+  {"id": "answered", "group": "what counts as news", "front": true, "ledger": ["H2", "H3"],
+   "rule": "A message the owner answered later in the same thread is not news; a pushed card whose people were all answered collapses in place to one line.",
+   "example": "a question at 09:10 and the owner's reply at 09:30: no line; the 09:05 card becomes \"answered by you at 09:30, closed\""},
+  {"id": "stale", "group": "what counts as news", "front": true, "ledger": ["H4"],
+   "rule": "Never surface a message older than 48 hours as new (stale_hours 48).",
+   "example": "a poller that was down for three days does not replay its backlog as notifications"},
+  {"id": "closure", "group": "what never becomes a card", "front": true, "ledger": ["H5"],
+   "rule": "Pure closure (ok, thanks, a reaction, an emoji) never becomes a card.",
+   "example": "\"thanks!\" after a sent file: dropped"},
+  {"id": "repair-not-card", "group": "what never becomes a card", "front": false, "ledger": ["H6"],
+   "rule": "A fault a machine can repair goes to the system agent, never to the owner as a card.",
+   "example": "an expired poller session: a registry line for the system agent, no card"},
+  {"id": "intros", "group": "what counts as news", "front": false, "ledger": ["H7"],
+   "rule": "An introduction between the owner and a third party always needs a reply.",
+   "example": "subject \"A <> B\": kept even without a question in the preview"}
+ ]
+}

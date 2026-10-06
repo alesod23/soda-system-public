@@ -1,0 +1,27 @@
+# secrets and local config
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials*.json
+token*.json
+
+# state and data: never committed (examples/ holds the only sample data, all invented)
+data/
+*.jsonl
+!examples/**/*.example.jsonl
+state.json
+*.state.json
+*.db
+*.sqlite
+*.log
+*.pid
+*.csv
+
+# python / node
+__pycache__/
+*.pyc
+.venv/
+venv/
+node_modules/

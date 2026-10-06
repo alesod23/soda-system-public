@@ -1,0 +1,7 @@
+{
+  "_doc": "The hub's guard. Filed by `rules/addrule.py --contract hub --rule ... --quote ... --suppress <regex>` from the owner's own sentences; matched case-insensitively against a card's text + context on every POST /pending. downgrade = posted as an update (told, not asked); drop = kept with its #N but nothing is pushed.",
+  "downgrade": [
+    {"match": "\\b(confirm|ok to proceed with)\\b.*\\b(as you (asked|instructed)|you already (asked|told))\\b", "rule": "H2", "note": "never ask to confirm what was already instructed"}
+  ],
+  "drop": []
+}

@@ -1,0 +1,35 @@
+{
+ "surface": "email",
+ "skill_name": "drafting",
+ "description": "READ THIS BEFORE WRITING ANY MESSAGE TO A PERSON on the owner's behalf (email, chat, social DM), in any language. Compiled from EMAIL-REVIEW-CONTRACT.md; never edit by hand.",
+ "groups": ["structure", "voice"],
+ "usage": [
+  "Every drafting entry point reads this before writing; the critic checks the draft against the same ledger after the fact and logs hit lines.",
+  "In front: what the hit counts say is still needed. Assumed: still checked, back in front the moment it fires."
+ ],
+ "procedure": [
+  "Find the thread and the language first ({R:thread}, {R:language}).",
+  "Write the ask first ({R:ask-first}), short ({R:short}), no filler ({R:no-filler}).",
+  "Verify every attachment and link you mention exists ({R:no-false-attachment})."
+ ],
+ "rules": [
+  {"id": "ask-first", "group": "structure", "front": true, "ledger": ["H1", "H7"],
+   "rule": "The ask goes first, subject included; propose one concrete time instead of asking for availability.",
+   "example": "Subject \"Move Thursday's call to 15:00?\""},
+  {"id": "short", "group": "structure", "front": true, "ledger": ["H2"],
+   "rule": "At most five sentences for a first message.",
+   "example": ""},
+  {"id": "thread", "group": "structure", "front": false, "ledger": ["H3"],
+   "rule": "Reply in the existing thread.",
+   "example": ""},
+  {"id": "no-filler", "group": "voice", "front": true, "ledger": ["H4"],
+   "rule": "No filler openers.",
+   "example": "start with the point, not \"I hope this finds you well\""},
+  {"id": "language", "group": "voice", "front": true, "ledger": ["H5"],
+   "rule": "Write in the language the person last wrote in.",
+   "example": ""},
+  {"id": "no-false-attachment", "group": "voice", "front": true, "ledger": ["H6"],
+   "rule": "Never claim an attachment or a link that is not actually there.",
+   "example": ""}
+ ]
+}

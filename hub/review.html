@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Approval hub</title>
+<style>
+:root { --bg:#f7f7f5; --card:#fff; --ink:#1d1d1b; --muted:#6b6b66; --line:#e3e2dc; --yes:#1f7a3a; --no:#a32020; --accent:#3a5bd9; }
+@media (prefers-color-scheme: dark) { :root { --bg:#121313; --card:#1b1c1d; --ink:#ecebe6; --muted:#9a9a93; --line:#2c2d2f; --yes:#3fa05c; --no:#d0504a; --accent:#7f9bff; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.45 system-ui, -apple-system, Segoe UI, sans-serif; }
+header { padding:14px 16px; border-bottom:1px solid var(--line); display:flex; gap:12px; align-items:baseline; flex-wrap:wrap; }
+header h1 { font-size:17px; margin:0; } header small { color:var(--muted); }
+main { max-width:760px; margin:0 auto; padding:16px; }
+h2 { font-size:13px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); margin:22px 0 8px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin:0 0 10px; }
+.card.done { opacity:.62; }
+.top { display:flex; gap:8px; align-items:baseline; } .seq { font-weight:700; } .kind { font-size:12px; color:var(--muted); }
+.text { font-weight:600; margin:4px 0; overflow-wrap:anywhere; }
+pre { white-space:pre-wrap; overflow-wrap:anywhere; font:13px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; background:var(--bg); border-radius:6px; padding:8px; margin:6px 0; max-height:260px; overflow:auto; }
+.row { display:flex; gap:8px; margin-top:8px; flex-wrap:wrap; }
+input[type=text] { flex:1 1 220px; min-width:0; padding:8px 10px; border-radius:8px; border:1px solid var(--line); background:var(--bg); color:var(--ink); font-size:14px; }
+button { padding:8px 14px; border:0; border-radius:8px; font-weight:600; cursor:pointer; color:#fff; background:var(--accent); }
+button.yes { background:var(--yes); } button.no { background:var(--no); }
+.meta { font-size:12px; color:var(--muted); margin-top:6px; overflow-wrap:anywhere; }
+.empty { color:var(--muted); padding:8px 0; }
+</style>
+</head>
+<body>
+<header><h1>Approval hub</h1><small id="stamp"></small></header>
+<main>
+  <h2>Waiting for you</h2><div id="open"></div>
+  <h2>Decided in the last day</h2><div id="done"></div>
+  <h2>Feedback queue</h2><div id="queue"></div>
+</main>
+<script>
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+async function post(url, b) { await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(b) }); load(); }
+function card(it) {
+  const m = it.meta || {};
+  const art = m.body ? '<pre>' + esc((m.to ? 'To: ' + m.to + '\n' : '') + (m.subject ? 'Subject: ' + m.subject + '\n\n' : '') + m.body) + '</pre>'
+    : (it.context ? '<pre>' + esc(it.context) + '</pre>' : '');
+  const verdict = it.resolved ? '<div class="meta">' + esc(it.verdict || 'closed') + ' by ' + esc(it.resolved_by) + (it.feedback ? ' · "' + esc(it.feedback) + '"' : '') +
+    (it.action_result ? ' · action ' + (it.action_result.ok ? 'ran' : 'failed') : '') + '</div>' : '';
+  const ask = it.resolved ? '' : '<div class="row"><input type="text" placeholder="why (optional): becomes a rule if it is one" data-fb="' + esc(it.id) + '">' +
+    (it.kind === 'update' ? '<button data-ok="' + esc(it.id) + '">Seen</button>' : '<button class="yes" data-yes="' + esc(it.id) + '">Yes</button><button class="no" data-no="' + esc(it.id) + '">No</button>') + '</div>';
+  return '<div class="card' + (it.resolved ? ' done' : '') + '"><div class="top"><span class="seq">#' + it.seq + '</span><span class="kind">' + esc(it.kind || '') +
+    (it.type ? ' · ' + esc(it.type) : '') + (it.guard ? ' · guard ' + esc(it.guard.action) : '') + '</span></div><div class="text">' + esc(it.text) + '</div>' + art + verdict + ask + '</div>';
+}
+async function load() {
+  const r = await fetch('/recent').then((x) => x.json()).catch(() => ({ items: [] }));
+  const open = r.items.filter((x) => !x.resolved), done = r.items.filter((x) => x.resolved);
+  $('#open').innerHTML = open.map(card).join('') || '<div class="empty">Nothing waiting.</div>';
+  $('#done').innerHTML = done.map(card).join('') || '<div class="empty">Nothing yet.</div>';
+  const q = await fetch('/feedback').then((x) => x.json()).catch(() => ({ entries: [] }));
+  $('#queue').innerHTML = q.entries.slice(-15).reverse().map((e) => '<div class="card' + (e.status === 'done' ? ' done' : '') + '"><div class="top"><span class="kind">' +
+    esc(e.surface) + ' · ' + esc(e.status) + '</span></div><div class="text">"' + esc(e.text) + '"</div>' +
+    (e.result ? '<div class="meta">' + esc(typeof e.result === 'string' ? e.result : JSON.stringify(e.result)) + '</div>' : '') + '</div>').join('') || '<div class="empty">Empty.</div>';
+  $('#stamp').textContent = 'loaded ' + new Date().toLocaleTimeString();
+}
+document.addEventListener('click', (ev) => {
+  const t = ev.target, id = t.dataset.yes || t.dataset.no || t.dataset.ok;
+  if (!id) return;
+  const fb = (document.querySelector('[data-fb="' + id + '"]') || {}).value || '';
+  post('/resolve', { id, verdict: t.dataset.no ? 'no' : 'yes', feedback: fb, device: 'review-page' });
+});
+load(); setInterval(load, 15000);
+</script>
+</body>
+</html>

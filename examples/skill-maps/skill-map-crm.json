@@ -1,0 +1,34 @@
+{
+ "surface": "crm",
+ "skill_name": "crm",
+ "description": "READ THIS BEFORE WRITING TO THE CRM (a person, a next step, a note) and, for the reader, BEFORE DECIDING A PERSON'S NEXT STEP. Compiled from CRM-CONTRACT.md; never edit by hand.",
+ "groups": ["who owns a person", "what the reader does"],
+ "usage": [
+  "The reader proposes one next step per person from the person's state plus the new event; this skill is in its prompt on every call.",
+  "In front: what the hit counts say is still needed. Assumed: still checked, back in front the moment it fires."
+ ],
+ "procedure": [
+  "Check the step did not already happen ({R:already-happened}).",
+  "Owed replies first ({R:owed-first}); one step per person ({R:one-step}) with its origin ({R:origin})."
+ ],
+ "rules": [
+  {"id": "owns", "group": "who owns a person", "front": false, "ledger": ["H1"],
+   "rule": "A to-do that names a contact is that person's next step in the CRM, never a separate task.",
+   "example": ""},
+  {"id": "one-step", "group": "who owns a person", "front": true, "ledger": ["H2"],
+   "rule": "One person, one next step: a new proposal replaces the old one.",
+   "example": "\"follow up Tuesday\" replaces \"follow up Friday\", never both"},
+  {"id": "origin", "group": "who owns a person", "front": true, "ledger": ["H3"],
+   "rule": "Every step carries its origin: the event or the sentence it came from.",
+   "example": "step \"send the deck\" with origin \"meeting note 2026-01-07, their ask at the end\""},
+  {"id": "owed-first", "group": "what the reader does", "front": true, "ledger": ["H4"],
+   "rule": "A reply the owner owes comes before anything else on Today.",
+   "example": ""},
+  {"id": "already-happened", "group": "what the reader does", "front": true, "ledger": ["H5", "H7"],
+   "rule": "Before proposing a step, check it did not already happen (sent message or calendar event after the step date closes it); default cadence two working days after an unanswered message.",
+   "example": "a follow-up proposed for someone met yesterday: closed with the calendar event as evidence"},
+  {"id": "no-guessing", "group": "what the reader does", "front": true, "ledger": ["H6"],
+   "rule": "Never guess a contact route; an unknown route is a search, shown for review.",
+   "example": "no first.last@company guess: \"route unknown, search proposed\""}
+ ]
+}

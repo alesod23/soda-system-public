@@ -1,0 +1,48 @@
+{
+  "_doc": "Copy to config.json (or set SYSAGENT_CONFIG) and declare YOUR checks. key = stable id, what = one plain sentence, fix = the one whitelisted self-repair, for_owner = the one action only the owner may authorise (runs on the owner's YES on the STUCK card), owner_only = never self-repair.",
+  "registry_close_after_passes": 2,
+  "escalate_after_runs": 3,
+  "fix_gap_min": 25,
+  "fix_caps": {"systemd_restart": 3, "command": 2},
+  "checks": [
+    {
+      "key": "hub",
+      "what": "the approval hub does not answer",
+      "kind": "http",
+      "url": "http://127.0.0.1:4180/pending",
+      "fix": {"kind": "systemd_restart", "unit": "soda-hub.service", "user": true}
+    },
+    {
+      "key": "brain",
+      "what": "the brain door (Postgres + pgvector behind HTTP) does not answer /health",
+      "kind": "http",
+      "url": "http://127.0.0.1:4150/health",
+      "fix": {"kind": "systemd_restart", "unit": "soda-brain.service", "user": true}
+    },
+    {
+      "key": "postgres",
+      "what": "Postgres does not accept connections",
+      "kind": "tcp",
+      "host": "127.0.0.1",
+      "port": 5432,
+      "owner_only": true,
+      "for_owner": {"kind": "run", "what": "restart the Postgres cluster", "argv": ["sudo", "-n", "systemctl", "restart", "postgresql"],
+                  "what_it_means": "no recall, no matching, no brain answers until it is back"}
+    },
+    {
+      "key": "observers",
+      "what": "no observer has written a rule hit for 24 hours (the rule loop is blind)",
+      "kind": "file_fresh",
+      "path": "./data/rule-hits.jsonl",
+      "max_age_min": 1440
+    },
+    {
+      "key": "notif-daemon",
+      "what": "the notification daemon is not running",
+      "kind": "systemd",
+      "unit": "soda-notif.service",
+      "user": true,
+      "fix": {"kind": "systemd_restart", "unit": "soda-notif.service", "user": true}
+    }
+  ]
+}

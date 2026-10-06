@@ -1,0 +1,30 @@
+{
+  "_doc": "The surface registry. A LEDGER is the rule file of one kind of artifact; a SURFACE is where a sentence of feedback is typed. Adding a loop = one entry under ledgers (and a skill-map-<key>.json), plus one line under surface_ledger for every new place a sentence can come from. See docs/01-rule-loop.md, 'The template of a loop'.",
+  "ledgers": {
+    "email": {
+      "file": "EMAIL-REVIEW-CONTRACT.md",
+      "about": "how a message to a person is written (any channel)"
+    },
+    "hub": {
+      "file": "HUB-CARD-CONTRACT.md",
+      "about": "whether an approval card should exist, and what a card must show"
+    },
+    "crm": {
+      "file": "CRM-CONTRACT.md",
+      "about": "a CRM row, a next step, who someone is, a contact route, follow-up timing"
+    },
+    "notif": {
+      "file": "NOTIF-CONTRACT.md",
+      "about": "what reaches the owner's phone unasked (notification cards, recaps, done-notifications)"
+    }
+  },
+  "surface_ledger": {
+    "email": "email",
+    "hub": "hub",
+    "hub-review": "hub",
+    "crm": "crm",
+    "notif": "notif",
+    "telegram": "notif"
+  },
+  "default_ledger": "hub"
+}

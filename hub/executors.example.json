@@ -1,0 +1,5 @@
+{
+  "_doc": "What a YES runs, per action type. A card's action is {\"type\": \"<key>\", ...fields}; {field} placeholders in argv are filled from those fields; the command runs WITHOUT a shell, from the repo root. Keep this list short: every entry is something the system may do on the owner's word alone. Replace the echo examples with your own senders (e.g. a script that sends an existing email draft by id).",
+  "echo": {"argv": ["node", "-e", "console.log('would run with: ' + process.argv[1])", "{text}"], "timeout_s": 10},
+  "email-send-draft": {"argv": ["node", "-e", "console.log('replace me: send draft ' + process.argv[1] + ' from account ' + process.argv[2])", "{draft_id}", "{account}"], "timeout_s": 120}
+}
