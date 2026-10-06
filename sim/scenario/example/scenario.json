@@ -1,0 +1,20 @@
+{
+  "_doc": "The example scenario. passes = when the system's producers run each simulated day; owner_passes = when the simulated owner reads cards; events_per_day = how many events the world generates; alt_share = the share of events sent from an address the CRM does not know; noise_share = events that need no answer. preferences = the owner's hidden taste, as checks the judge can run on a draft and the sentence the owner says the first time one fails (`rule` / `ledger` = what the stub classifier files; a real run lets the real classifier decide).",
+  "start": "2026-03-02",
+  "passes": ["09:00", "13:00", "18:00"],
+  "owner_passes": ["13:00", "18:00"],
+  "events_per_day": 6,
+  "alt_share": 0.34,
+  "noise_share": 0.2,
+  "preferences": [
+    {"id": "one_person", "check": "one_person", "ledger": "hub",
+     "quote": "never mix two different people in one card",
+     "rule": "A card is about one person: never bundle two people in one card."},
+    {"id": "ask_first", "check": "ask_first", "ledger": "email",
+     "quote": "put the ask in the first sentence, I don't want to dig for it",
+     "rule": "The ask goes first: the first sentence of a message is the request."},
+    {"id": "no_filler", "check": "no_filler", "ledger": "email",
+     "quote": "drop the 'hope this finds you well' stuff",
+     "rule": "No filler openers such as 'I hope this finds you well' or 'just checking in'."}
+  ]
+}

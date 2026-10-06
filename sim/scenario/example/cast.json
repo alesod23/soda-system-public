@@ -1,0 +1,14 @@
+{
+  "_doc": "A fictional cast. `crm` is what the system knows (the sandbox CRM); `alt_email` is a second address the CRM does NOT know, used by the world agent to test person matching; `open_loop` is what the owner owes that person.",
+  "owner": {"name": "Robin Owner", "email": "robin@owner.example.com"},
+  "people": [
+    {"id": "p-sam", "name": "Sam Rivera", "company": "Northwind Supplies", "email": "sam@northwind.example.com",
+     "alt_email": "sam.rivera.home@mail.example.com", "open_loop": "send the revised pricing sheet"},
+    {"id": "p-kim", "name": "Kim Okafor", "company": "Bluefield Labs", "email": "kim@bluefield.example.com",
+     "alt_email": "k.okafor@mail.example.com", "open_loop": "book the pilot kickoff call"},
+    {"id": "p-ana", "name": "Ana Lindqvist", "company": "Harbor Design Studio", "email": "ana@harbor.example.com",
+     "alt_email": "ana.l@mail.example.com", "open_loop": null},
+    {"id": "p-lee", "name": "Lee Moreau", "company": "Quarry Analytics", "email": "lee@quarry.example.com",
+     "alt_email": "lee.moreau@mail.example.com", "open_loop": "send the signed agreement"}
+  ]
+}

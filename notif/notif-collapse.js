@@ -7,7 +7,7 @@
  *  tick(deps)                  AFTER push: a card whose every sender the owner answered after their message is edited in
  *                              place into one line "answered by you at HH:MM, closed" (notif ledger H3).
  *
- * The stale window is HIS number, read from the compiled notif skill on every call (H4 carries `stale_hours <n>` in its
+ * The stale window is the owner's number, read from the compiled notif skill on every call (H4 carries `stale_hours <n>` in its
  * rule text, which survives the compile), else NOTIF_STALE_HOURS, else 48.
  * Never throws into the daemon and never sends anything new: the only Telegram call is an edit of a card it pushed.
  */

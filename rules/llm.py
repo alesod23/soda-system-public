@@ -7,6 +7,9 @@ something is decided or written; a cheaper model at most classifies.
     SODA_LLM_BIN     the CLI (default: claude)
     SODA_LLM_MODEL   the model alias (default: opus)
     SODA_LLM_STUB    a file whose text answers every call (tests and offline demos: nothing leaves the machine)
+    SODA_LLM_STUB_MAP  a JSON file {"<substring>": "<answer>", ...}: the first key found in the prompt answers it
+                     (several different calls in one offline run, e.g. the simulation); no key matched = an error,
+                     never a silent real call
 """
 from __future__ import annotations
 
@@ -24,6 +27,13 @@ TIMEOUT = int(os.environ.get("SODA_LLM_TIMEOUT", "240"))
 
 def llm(prompt: str, model: str | None = None) -> str:
     """One answer as text."""
+    smap = os.environ.get("SODA_LLM_STUB_MAP")
+    if smap:
+        for key, answer in json.loads(Path(smap).read_text(encoding="utf-8")).items():
+            if key in prompt:
+                return answer if isinstance(answer, str) else json.dumps(answer)
+        if not os.environ.get("SODA_LLM_STUB"):
+            raise RuntimeError("SODA_LLM_STUB_MAP: no key matched the prompt")
     stub = os.environ.get("SODA_LLM_STUB")
     if stub:
         return Path(stub).read_text(encoding="utf-8")

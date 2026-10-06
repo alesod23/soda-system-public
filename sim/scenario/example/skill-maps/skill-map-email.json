@@ -1,0 +1,4 @@
+{"surface": "email", "skill_name": "drafting",
+ "description": "Simulation seed: how a message to a person is written. Compiled from EMAIL-REVIEW-CONTRACT.md.",
+ "groups": ["structure"], "usage": ["Read before drafting. New rows compile verbatim, in front."], "procedure": ["Draft, then check every rule in front."],
+ "rules": [{"id": "thread", "group": "structure", "front": true, "ledger": ["H1"], "rule": "Reply in the existing thread.", "example": ""}]}

@@ -8,6 +8,18 @@ replace them with your own.
 It is tailored for **Postgres 16 + pgvector** (one store for notes, rules, people, cards, to-dos and events, with
 embeddings and hybrid search) and for the **Claude Code CLI** as the model runtime (`claude -p`, no API keys in code).
 
+## In daily use
+
+Figures read from the live system on 7 Oct 2026 (counts only; none of the underlying data is in this repository):
+
+- in use since July 2026 (first commit of the task repository: 30 Jul 2026);
+- approximately **320 rules** filed in the owner's own words across **10 rule ledgers**: hub 80, email 99, CRM 62,
+  proactive 28, travel 21, notifications 8, meetings 8, cleaning 7, board 4, whitelist 3;
+- approximately **22,000 rule-hit lines** logged by the observers;
+- approximately **45 decisions a day** on the approval hub (637 in the 13 days since the decision log started on
+  24 Sep 2026);
+- approximately **20 always-on services and 30 scheduled jobs** across an always-on server and a laptop.
+
 ## The idea in one picture
 
 ```
@@ -41,9 +53,10 @@ embeddings and hybrid search) and for the **Claude Code CLI** as the model runti
                                     |  /brain/recall  /brain/match  /brain/rules  MCP /mcp            |
                                     +---------------------------------------------------------------+
                                     system agent: checks -> whitelisted fixes -> ONE "STUCK" card
+                                    sim/: the whole loop in a sandbox, simulated world + owner, scored per day
 ```
 
-## The five loops
+## The loops
 
 | | Loop | What it shows | Doc |
 |---|---|---|---|
@@ -52,6 +65,7 @@ embeddings and hybrid search) and for the **Claude Code CLI** as the model runti
 | 3 | **The brain** | One Postgres + pgvector store over notes, rules, people, cards, to-dos and events; hybrid vector + full-text search; `/brain/match` finds the open to-do, person or card an event is about. | [docs/03-brain.md](docs/03-brain.md) |
 | 4 | **Notifications** | Incoming messages are pooled, filtered in code (already answered, stale), classified by a model that reads the compiled notification skill on every batch, and collapsed in place once answered. | [docs/04-notifications.md](docs/04-notifications.md) |
 | 5 | **The system agent** | Monitors, whitelisted self-fixes with caps, a two-pass proof, a registry of what is broken, and one "STUCK" card whose yes performs the fix. | [docs/05-system-agent.md](docs/05-system-agent.md) |
+| 6 | **The simulation harness** | A world agent plays the contacts, an owner agent with a persona answers cards and gives feedback, the real hub and rules engine run in a sandbox over simulated days, a judge scores every event, and arms (no brain / brain / no learning) are compared with a verdict. | [docs/06-simulation.md](docs/06-simulation.md) |
 
 ## Repository layout
 
@@ -63,10 +77,11 @@ hub/                     the approval hub (server.js), its review page, the Tele
 brain/                   schema.sql (+ migration), indexer, HTTP + MCP server, to-do / card ingest, event matcher
 notif/                   the notification daemon, debounce, filters, observer, collapse, Telegram push
 system-agent/            checks, registry, fix guard, unstuck, example config
+sim/                     simulation harness: world / owner / producer agents, sandbox clock, judge, compare, arms, scenario
 examples/                invented ledgers, skill maps, compiled skills, hit lines, brain pages
 docs/                    one page per loop
 scripts/quickstart.sh    data dir from the examples + compile every skill
-tests/                   end-to-end test of the rule loop (offline, model stubbed)
+tests/                   end-to-end tests of the rule loop and the simulation (offline, model stubbed)
 ```
 
 State never lives in the repo: everything the system writes goes to `$SODA_HOME` (default `./data`, gitignored).
@@ -135,10 +150,21 @@ curl -s 127.0.0.1:4150/brain/rules  -H 'content-type: application/json' -d '{"to
 **6. Notifications and the system agent**: [docs/04-notifications.md](docs/04-notifications.md),
 [docs/05-system-agent.md](docs/05-system-agent.md).
 
+**7. Simulate before you change anything live**
+
+```bash
+python3 sim/run.py --arm A --days 6 --run t-A --stub      # offline and deterministic; drop --stub for model agents
+python3 sim/run.py --arm B --days 6 --run t-B --stub
+python3 sim/compare.py t-A t-B                            # curves per arm + VERDICT with delta and p-value
+```
+
+See [sim/README.md](sim/README.md) for arms, scenarios, Langfuse tracing and the honest limits.
+
 **Tests**
 
 ```bash
 python3 tests/test_rule_loop.py            # hub + guard + idem + executor + rejection -> rule -> recompiled skill
+python3 tests/test_sim.py                  # 2-day stub simulation, arms A and B: a day-1 rule is read on day 2; verdict
 (cd notif && npm test)                     # debounce, filters, observer hit lines, collapse
 (cd system-agent && python3 test_registry.py && python3 test_fix_guard.py)
 ```
@@ -156,7 +182,7 @@ python3 tests/test_rule_loop.py            # hub + guard + idem + executor + rej
 ## What is not here
 
 The private deployment also has a CRM application, channel adapters (mail, chat, calendar, meeting notes), a daily
-planning page, travel search and a simulation harness. They are left out because they are specific to one person's
+planning page and travel search. They are left out because they are specific to one person's
 accounts; the interfaces they plug into (the hub's `/pending` and `/feedback`, the notification store line format,
 the brain's `/crm/put` and `/crm/events`) are documented here.
 

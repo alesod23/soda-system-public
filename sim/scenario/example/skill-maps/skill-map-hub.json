@@ -1,0 +1,4 @@
+{"surface": "hub", "skill_name": "hub",
+ "description": "Simulation seed: when a card exists and what it shows. Compiled from HUB-CARD-CONTRACT.md.",
+ "groups": ["cards"], "usage": ["Read before posting a card. New rows compile verbatim, in front."], "procedure": ["Post one card per decision."],
+ "rules": [{"id": "outbound", "group": "cards", "front": true, "ledger": ["H1"], "rule": "Anything outbound to another person needs a card.", "example": ""}]}
